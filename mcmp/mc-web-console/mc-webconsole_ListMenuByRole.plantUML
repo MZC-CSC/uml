@@ -1,0 +1,41 @@
+@startuml
+
+title "MenuList"
+
+actor User as EndUser
+
+participant "App.go" as App
+participant "Auth.go" as Auth
+participant "UserSession" as Session
+database WebConsoleDB
+database MCIAMDB
+participant IamManager
+participant KeyCloak
+
+
+
+
+EndUser     -> App : GET: /api/menu
+App         -> Auth ++: ListMenu()
+
+App -> IamManager : GET: /api/webconsole/menu
+
+IamManager -> KeyCloak : GetUserGroups()
+loop "find User Roles for menu by User"
+IamManager -> IamManager : GetRoleByGroup()
+    IamManager -> KeyCloak : GetRole()
+    IamManager -> IamManager : ExtraceWebConsoleMenuRol()
+    note right
+        그룹에서 메뉴에 관련된 Role 추출
+        Role에서  web-console-menu = 'Y'인 Role 추출.
+    end note    
+end 
+
+Auth <- IamManager : response UserMenuRole
+
+Auth        -> WebConsoleDB : GetMenuByRole()
+Auth        <- WebConsoleDB : response MenuList by role
+
+EndUser     <- Auth --: return menu list
+
+@enduml

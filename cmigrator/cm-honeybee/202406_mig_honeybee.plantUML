@@ -1,0 +1,76 @@
+@startuml
+
+title "Integration Test"
+
+actor User as EndUser
+
+participant "CM-BUTTERFLY" as butterfly
+participant "CM-HONEYBEE" as honeyBee
+
+
+EndUser     -> butterfly ++: Source Computing 환경관리
+    note right
+        Migration Group 관리
+    end note
+    butterfly         -> butterfly ++: createMigrationGroup
+        butterfly         -> honeyBee ++: POST : /migration_group
+        butterfly         <- honeyBee --: return result
+    butterfly        <- butterfly --: return result
+
+    note right
+        Connection 정보 관리
+    end note
+    butterfly         -> butterfly ++: createOnPremiseConnection
+        butterfly         -> honeyBee ++: POST : /connection_info
+        butterfly         <- honeyBee --: return result
+    butterfly        <- butterfly --: return result
+EndUser     <- butterfly --:
+
+
+honeyBee     -> honeyBee ++
+    note right
+        Source Computing 형상정보수집기 설치 관리
+    end note
+honeyBee     <- honeyBee --
+
+
+EndUser     -> butterfly ++:Source Computing 형상정보수집 관리
+    note right
+        Source Computing 형상정보 수집
+    end note
+    butterfly         -> butterfly ++: onPremConnectionMng
+        butterfly        -> honeyBee ++: GET : /connection_info
+        butterfly         <- honeyBee --: return result
+    butterfly        <- butterfly --: return result
+
+    butterfly        -> butterfly : connection 선택
+    butterfly        -> butterfly : 형상정보 수집
+
+    
+    butterfly        -> butterfly ++
+    note right
+        수집된 Source Computing 형상정보조회
+    end note
+    
+        butterfly         -> honeyBee ++: GET : /import/infra/{uuid}
+        butterfly         <- honeyBee --: return result
+    butterfly        <- butterfly --: return result
+
+EndUser     <- butterfly --:
+
+
+EndUser     -> butterfly ++:소스모델로 저장
+    note right
+        소스모델로 저장
+    end note
+
+    butterfly         -> butterfly : 형상정보기반 소스모델 정의
+    butterfly         -> butterfly : 소스모델 수정(저장 전)
+
+    butterfly         -> butterfly ++: 소스모델로 저장
+        butterfly        -> honeyBee ++: GET : /xxx
+        butterfly         <- honeyBee --: return result
+    butterfly        <- butterfly --: return result
+
+EndUser     <- butterfly --:
+@enduml

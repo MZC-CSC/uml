@@ -1,0 +1,49 @@
+@startuml
+
+title "[운영자] 환경구성- Workspace Manage"
+
+actor User as EndUser
+
+box "MC Web Console"
+participant WebconsoleFrontend
+participant WebconsoleBackend
+end box
+
+box "IAM Manager"
+participant IamManager
+end box
+
+box "InfraManager"
+participant InfraManager
+end box
+
+box "ApplicationManager"
+participant ApplicationManager
+end box
+
+EndUser     -> WebconsoleFrontend ++: 관리자 로그인
+    WebconsoleFrontend -> WebconsoleBackend ++: POST Login
+    WebconsoleFrontend  <- WebconsoleBackend --: Response : valid
+    WebconsoleFrontend -> WebconsoleBackend ++: POST GetWPmappingListByWorkspaceId
+    WebconsoleFrontend  <- WebconsoleBackend --: Response : Roles
+    WebconsoleFrontend -> WebconsoleFrontend : Set Menu by Roles
+EndUser     <- WebconsoleFrontend --: return 
+
+EndUser     -> WebconsoleFrontend : POST: Set workspace
+EndUser     -> WebconsoleFrontend : POST: Set project
+
+EndUser     -> WebconsoleFrontend ++: Workspace 목록
+    WebconsoleFrontend -> WebconsoleBackend ++: POST getworkspacelist
+    WebconsoleFrontend <- WebconsoleBackend --: Response
+    WebconsoleFrontend -> WebconsoleFrontend ++: Select an Workspace
+        WebconsoleFrontend -> WebconsoleBackend ++: POST getwpmappinglistbyworkspaceid
+        WebconsoleFrontend <- WebconsoleBackend --: Response
+    WebconsoleFrontend <- WebconsoleFrontend --: 
+
+    WebconsoleFrontend -> WebconsoleFrontend ++: Add new Workspace user role mapping
+        WebconsoleFrontend -> WebconsoleBackend ++: POST createworkspaceuserrolemappingbyname
+        WebconsoleFrontend <- WebconsoleBackend --: Response
+    WebconsoleFrontend <- WebconsoleFrontend --: 
+EndUser     <- WebconsoleFrontend --: return 
+
+@enduml

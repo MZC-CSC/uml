@@ -1,0 +1,60 @@
+@startuml
+
+title "[운영자] 환경구성"
+
+actor User as EndUser
+
+box "MC Web Console"
+participant WebconsoleFrontend
+participant WebconsoleBackend
+end box
+
+box "IAM Manager"
+participant IamManager
+end box
+
+box "InfraManager"
+participant InfraManager
+end box
+
+
+EndUser     -> WebconsoleFrontend ++: 관리자 로그인
+    WebconsoleFrontend -> WebconsoleBackend ++: POST Login
+    WebconsoleFrontend  <- WebconsoleBackend --: Response : valid
+    WebconsoleFrontend -> WebconsoleBackend ++: POST GetWPmappingListByWorkspaceId
+    WebconsoleFrontend  <- WebconsoleBackend --: Response : Roles
+
+    WebconsoleFrontend -> WebconsoleFrontend : Set Menu by Roles
+EndUser     <- WebconsoleFrontend --: return 
+
+EndUser     -> WebconsoleFrontend : POST: Set workspace
+EndUser     -> WebconsoleFrontend : POST: Set project
+
+EndUser     -> WebconsoleFrontend : VM Spec 관리
+    WebconsoleFrontend -> WebconsoleFrontend ++: VM Spec 목록 조회
+        WebconsoleFrontend  -> WebconsoleBackend ++: POST FilterSpecsByRange
+        WebconsoleFrontend  <- WebconsoleBackend --: Response
+    WebconsoleFrontend <- WebconsoleFrontend --: 
+
+    WebconsoleFrontend -> WebconsoleFrontend ++: VM Spec 추가
+        WebconsoleFrontend  -> WebconsoleFrontend : VM Spec 정보입력
+
+        WebconsoleFrontend  -> WebconsoleFrontend ++: VM CommonSpec 조회
+            WebconsoleFrontend  -> WebconsoleBackend ++: POST LookupSpecList
+            WebconsoleFrontend  <- WebconsoleBackend --: Response
+        WebconsoleFrontend  -> WebconsoleFrontend --: Spec 선택
+
+        WebconsoleFrontend  -> WebconsoleBackend ++: POST PostSpec
+        WebconsoleFrontend  <- WebconsoleBackend --: Response
+    WebconsoleFrontend <- WebconsoleFrontend --: 
+
+    WebconsoleFrontend -> WebconsoleFrontend : VM Spec 선택
+    WebconsoleFrontend -> WebconsoleFrontend ++: VM Spec 조회
+        WebconsoleFrontend  -> WebconsoleBackend ++: POST GetSpec
+        WebconsoleFrontend  <- WebconsoleBackend --: Response
+    WebconsoleFrontend <- WebconsoleFrontend --: 
+
+EndUser     <- WebconsoleFrontend --: return 
+
+
+@enduml

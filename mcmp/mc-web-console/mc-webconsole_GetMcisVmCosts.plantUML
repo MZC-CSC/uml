@@ -1,0 +1,42 @@
+@startuml
+
+title "Costs of All Vm of Mcis"
+
+actor User as EndUser
+
+participant WebconsoleBackend
+box "IAM Manager"
+participant IamManager
+end box
+participant CostManager
+participant InfraManager
+
+
+
+EndUser     -> WebconsoleBackend ++: GET: /api/ws/{wsId}/project/{prjId}/mcis/{mcisId}/costs
+
+WebconsoleBackend  -> IamManager ++: ValidUser()
+WebconsoleBackend  <- IamManager --: Response : valid
+
+WebconsoleBackend  -> CostManager ++: GetMcisCost()
+
+CostManager  -> IamManager ++: ValidUserAndRole()
+CostManager  <- IamManager --: Response : valid
+
+CostManager  -> InfraManager ++: GetMcis() : /api/ns/{prjId}/mcis/{mcisId}
+            note right
+                IamManager.projectId == InfraManager.nsId
+            end note
+
+InfraManager  -> IamManager ++: ValidUserAndRole()
+InfraManager  <- IamManager --: Response : valid
+
+CostManager  <- InfraManager --: response VMs of Mcis
+
+CostManager  <- CostManager : Get VMs Cost
+
+WebconsoleBackend     <- CostManager --: return mcisCosts
+
+EndUser     <- WebconsoleBackend --: return mcisCosts
+
+@enduml

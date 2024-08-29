@@ -1,0 +1,59 @@
+@startuml
+
+title "Monitoring 시나리오 "
+
+actor User as EndUser
+
+participant "WebConsole F-E" as FrontEnd
+participant "WebConsole B-E" as Backend
+participant "Infra Manager" as InfraManager
+participant "Opserverability" as O11y
+
+group  "MCI VM"
+EndUser     -> FrontEnd ++: VM 목록 조회
+    FrontEnd    -> Backend ++: 
+        Backend    -> InfraManager ++: GetVMList
+        Backend    <- InfraManager --:
+    FrontEnd    <- Backend --:
+EndUser     <- FrontEnd --:
+
+EndUser     -> FrontEnd ++: Select VM
+EndUser     <- FrontEnd --:
+
+EndUser     -> FrontEnd ++: Agent 설치
+    FrontEnd    -> Backend ++: 
+        Backend     -> O11y ++: Add a new monitoring Target
+        Backend     <- O11y --:
+    FrontEnd    <- Backend --:        
+EndUser        <- FrontEnd --: 
+end
+
+group  "Monitoring Config"
+EndUser     -> FrontEnd ++: Get Monitoring Metric
+    FrontEnd    -> Backend ++: 
+        Backend     -> O11y ++: Get All available monitoring plugin list
+        Backend     <- O11y --:
+    FrontEnd    <- Backend --:        
+EndUser        <- FrontEnd --: 
+    
+EndUser     -> FrontEnd ++: Set Monitoring Config
+    FrontEnd    -> Backend ++: 
+        Backend     -> O11y ++: Add target monitoring item
+        Backend     <- O11y --:
+        Backend     -> O11y ++: create request trigger policy
+        Backend     <- O11y --:
+        Backend     -> O11y ++: set trigger target
+        Backend     <- O11y --:
+    FrontEnd    <- Backend --:        
+EndUser        <- FrontEnd --: 
+end 
+
+group  "Monitoring Config "
+EndUser     -> FrontEnd ++: Remove Monitoring agent
+    FrontEnd    -> Backend ++: 
+        Backend     -> O11y ++: delete monitoring agent & management target
+        Backend     <- O11y --:
+    FrontEnd    <- Backend --:        
+EndUser        <- FrontEnd --: 
+end 
+@enduml

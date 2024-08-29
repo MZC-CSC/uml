@@ -1,0 +1,52 @@
+@startuml
+
+title "WorkflowCreate"
+
+actor User as EndUser
+
+participant "WorkflowCreate.html" as WorkflowCreate
+participant "workflowcreate.js" as wfCreate
+participant "workflowutil.js" as wfUtil
+participant "Cicada" as cicada
+
+
+
+EndUser     -> WorkflowCreate ++
+    note right
+        workflow 초기화
+    end note
+    WorkflowCreate      -> wfCreate ++: editableState()
+        wfCreate        -> cicada ++: getWorkflowTemplateList()
+        wfCreate        <- cicada --: return workflowTemplateList
+        wfCreate        -> wfCreate : DOMContentLoaded()
+    WorkflowCreate      <- wfCreate --:
+
+
+
+    WorkflowCreate        -> wfCreate ++: setWorkflowByTemplate()
+    note right
+        workflow template 선택
+    end note
+        wfCreate        -> cicada ++: getWorkflowTemplateById()
+        wfCreate        <- cicada --: return workflowTemplate
+        wfCreate        -> wfCreate : convertToDiagram()
+        wfCreate        -> wfUtil : defineTaskStepDynamicMcis()
+        wfCreate        -> wfCreate : resetDesigner()
+    WorkflowCreate     <- wfCreate --:
+
+    WorkflowCreate     -> WorkflowCreate : Edit Tasks
+
+EndUser     -> WorkflowCreate
+    note right
+        workflow 저장
+    end note
+    WorkflowCreate  -> wfCreate ++: saveWorkflow
+        wfCreate        -> wfCreate : validateWorkflow()
+        wfCreate        -> wfCreate : validateTask()
+        wfCreate        -> cicada ++: saveWorkflow()
+        wfCreate        <- cicada --: return saveWorkflow result
+    WorkflowCreate     <- wfCreate --: return workflowId
+
+EndUser     <- WorkflowCreate --
+
+@enduml

@@ -1,0 +1,52 @@
+@startuml
+
+title "Integration Test"
+
+actor User as EndUser
+
+participant "CM-BUTTERFLY" as butterfly
+participant "CM-CICADA" as cicada
+participant "CM-BEETLE" as beetle
+participant "CM-HONEYBEE" as honeyBee
+
+
+
+EndUser     -> butterfly ++
+    note right
+        Get Workflow Template, Task Components
+    end note
+    butterfly   -> butterfly ++: getWorkflowTemplateList
+        butterfly   -> cicada ++: GET /workflow_template
+        butterfly  <- cicada --: return result
+    butterfly  <- butterfly --:
+EndUser     <- butterfly --
+
+EndUser     -> butterfly ++
+    butterfly   -> butterfly ++: getTaskComponentList
+        butterfly   -> cicada ++: GET /task_template
+        butterfly  <- cicada --: return result
+    butterfly  <- butterfly --:
+EndUser     <- butterfly --
+
+
+    note right
+        Workflow Create
+    end note
+EndUser     -> butterfly ++
+    butterfly  -> butterfly ++: get targetModelList
+        butterfly  -> beetle ++: POST /xxx
+        butterfly  <- beetle --: return result
+    butterfly  <- butterfly --:
+
+    butterfly  -> butterfly : select targetModel
+    butterfly  -> butterfly : select workflow template
+    butterfly  -> butterfly : load workflow template
+    butterfly  -> butterfly : edit task 
+    
+    butterfly  -> butterfly ++: save workflow
+        butterfly  -> cicada ++: POST /workflow
+        butterfly  <- cicada --: return result
+    butterfly  <- butterfly --:
+EndUser     <- butterfly --
+ 
+@enduml

@@ -1,0 +1,42 @@
+@startuml
+
+title "ListProductFamily GCP"
+
+actor User as EndUser
+
+participant PriceInfoHandler
+participant CommonHandler
+participant "GCP BillingApi" as GCP
+
+
+group Step: Get ProductFamily of GCP
+    autonumber
+    ' autoactivate on
+    EndUser -> PriceInfoHandler : ListProductFamily
+    PriceInfoHandler -> CommonHandler ++: CallServicesList
+    CommonHandler -> GCP ++: BillingApi.Services.List()
+    CommonHandler <- GCP --: Return respService
+
+    note right
+        GCP가 제공하는 api는 List만 있으므로
+        필요한 service는 전체 List를 돌면서 추출해야 함.
+    end note
+    loop respService.Services
+        CommonHandler -> GCP ++: BillingApi.Services.Skus.List(serviceName)
+        CommonHandler <- GCP --: Return resp
+
+        loop resp.Skus
+            CommonHandler -> CommonHandler : addProductFamily
+            note right
+                sku의 category 안에 ResourceFamily, ResourceGroup 이 있어
+                모든 sku에서 중복을 제거한 ResourceFamily 추출
+            end note
+        end
+    end
+    PriceInfoHandler <- CommonHandler
+    EndUser <- PriceInfoHandler --: Return ProductFamily
+    
+end
+
+
+@enduml

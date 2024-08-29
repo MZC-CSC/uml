@@ -1,0 +1,48 @@
+@startuml
+
+title "[운영자] 환경구성- Platform install"
+
+actor User as EndUser
+
+box "MC Web Console"
+participant WebconsoleFrontend
+participant WebconsoleBackend
+end box
+
+box "IAM Manager"
+participant IamManager
+end box
+
+box "InfraManager"
+participant InfraManager
+end box
+
+box "ApplicationManager"
+participant ApplicationManager
+end box
+
+box "PlatformVM"
+participant PlatformVM
+end box
+
+EndUser     -> PlatformVM ++: 플랫폼기반 전체 fw 설치 및 실행
+EndUser     <- PlatformVM --: Git clone, docker-compose up
+
+EndUser     -> WebconsoleFrontend ++: fw 설치 상태 확인
+    WebconsoleFrontend -> WebconsoleBackend ++: POST /readyz
+    WebconsoleFrontend  <- WebconsoleBackend --: Response : valid
+EndUser     <- WebconsoleFrontend --: Response : valid
+
+EndUser     -> PlatformVM ++: FW Setup. 
+    PlatformVM  -> IamManager ++: IAMManager init 
+        IamManager  -> IamManager : init script 실행
+    PlatformVM  <- IamManager --:
+
+    PlatformVM  -> InfraManager ++: InfraManager Setup
+        InfraManager  -> InfraManager : credential script 실행
+        InfraManager  -> InfraManager : init script 실행
+    PlatformVM  <- InfraManager --: 
+EndUser     <- PlatformVM --: Response : valid
+
+
+@enduml

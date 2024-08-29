@@ -1,0 +1,68 @@
+@startuml
+
+title "[운영자] 환경구성"
+
+actor User as EndUser
+
+box "MC Web Console"
+participant WebconsoleFrontend
+participant WebconsoleBackend
+end box
+
+box "IAM Manager"
+participant IamManager
+end box
+
+box "InfraManager"
+participant InfraManager
+end box
+
+box "ApplicationManager"
+participant ApplicationManager
+end box
+
+EndUser     -> WebconsoleFrontend ++: 관리자 로그인
+    WebconsoleFrontend -> WebconsoleBackend ++: POST Login
+    WebconsoleFrontend  <- WebconsoleBackend --: Response : valid
+    WebconsoleFrontend -> WebconsoleBackend ++: POST GetWPmappingListByWorkspaceId
+    WebconsoleFrontend  <- WebconsoleBackend --: Response : Roles
+
+    WebconsoleFrontend -> WebconsoleFrontend : Set Menu by Roles
+EndUser     <- WebconsoleFrontend --: return 
+
+EndUser     -> WebconsoleFrontend : POST: Set workspace
+EndUser     -> WebconsoleFrontend : POST: Set project
+
+EndUser     -> WebconsoleFrontend : SecurityGroup 관리
+    WebconsoleFrontend -> WebconsoleFrontend ++: SecurityGroup 목록 조회
+        WebconsoleFrontend  -> WebconsoleBackend ++: POST GetAllSecurityGroup
+        WebconsoleFrontend  <- WebconsoleBackend --: Response
+    WebconsoleFrontend <- WebconsoleFrontend --: 
+
+    WebconsoleFrontend -> WebconsoleFrontend ++: SecurityGroup 추가
+        WebconsoleFrontend -> WebconsoleFrontend : SecurityGroup 정보입력
+        WebconsoleFrontend -> WebconsoleFrontend : firewall 정보입력
+        WebconsoleFrontend  -> WebconsoleBackend ++: POST PostSecurityGroup
+        WebconsoleFrontend  <- WebconsoleBackend --: Response
+    WebconsoleFrontend <- WebconsoleFrontend --: 
+
+    WebconsoleFrontend -> WebconsoleFrontend ++: SecurityGroup 목록 조회
+        WebconsoleFrontend  -> WebconsoleBackend ++: POST GetAllSecurityGroup
+        WebconsoleFrontend  <- WebconsoleBackend --: Response
+    WebconsoleFrontend <- WebconsoleFrontend --: 
+
+    WebconsoleFrontend -> WebconsoleFrontend : SecurityGroup 선택
+    WebconsoleFrontend -> WebconsoleFrontend ++: SecurityGroup 조회
+        WebconsoleFrontend  -> WebconsoleBackend ++: POST GetSecurityGroup
+        WebconsoleFrontend  <- WebconsoleBackend --: Response
+    WebconsoleFrontend <- WebconsoleFrontend --: 
+
+    WebconsoleFrontend -> WebconsoleFrontend ++: firewall 추가
+        WebconsoleFrontend -> WebconsoleFrontend : firewall 정보입력
+        WebconsoleFrontend  -> WebconsoleBackend ++: POST PostFirewallRules
+        WebconsoleFrontend  <- WebconsoleBackend --: Response
+    WebconsoleFrontend <- WebconsoleFrontend --: 
+
+EndUser     <- WebconsoleFrontend --: return 
+
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+
+title "Iam Manager Create Project"
+
+actor User as EndUser
+
+participant "App.go" as App
+participant "Project.go" as ProjectController
+participant "ProjectHandler.go" as ProjectHandler
+participant "UserSession" as Session
+
+box "Tumblebug"
+participant Tumblebug as TB
+end box
+
+database Database as DB
+
+EndUser -> App : POST: CreateProject()
+App -> ProjectController : CreateProject()
+ProjectController -> ProjectHandler : CreateProject()
+ProjectHandler -> TB : CreateNs() // TOBE : 추가필요
+ProjectHandler <- TB : Response : NS
+ProjectController -> DB : SaveProject()
+EndUser <- ProjectController : return status
+
+@enduml

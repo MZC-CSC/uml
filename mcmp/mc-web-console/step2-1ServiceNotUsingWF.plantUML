@@ -1,0 +1,108 @@
+@startuml
+
+title "[사용자] 서비스 생성 및 활용(WF Not 활용)"
+
+actor User as EndUser
+
+box "MC Web Console"
+participant WebconsoleFrontend
+participant WebconsoleBackend
+end box
+
+box "IAM Manager"
+participant IamManager
+end box
+
+box "InfraManager"
+participant InfraManager
+end box
+
+box "ApplicationManager"
+participant ApplicationManager
+end box
+
+box "Observability"
+participant Observability
+end box
+
+
+EndUser     -> WebconsoleFrontend ++: 사용자 로그인
+    WebconsoleFrontend -> WebconsoleBackend ++: POST Login
+    WebconsoleFrontend  <- WebconsoleBackend --: Response : valid
+    WebconsoleFrontend -> WebconsoleBackend ++: POST GetWPmappingListByWorkspaceId
+    WebconsoleFrontend  <- WebconsoleBackend --: Response : Roles
+    WebconsoleFrontend -> WebconsoleFrontend : Set Menu by Roles
+EndUser     <- WebconsoleFrontend --: return 
+
+EndUser     -> WebconsoleFrontend : POST: Set workspace
+EndUser     -> WebconsoleFrontend : POST: Set project
+
+EndUser     -> WebconsoleFrontend ++: 인프라 생성
+    WebconsoleFrontend  -> WebconsoleFrontend ++: MCIS MNG
+        WebconsoleFrontend  -> WebconsoleFrontend ++: MCIS 목록 조회
+            WebconsoleFrontend  -> WebconsoleBackend ++: GET : / 
+            WebconsoleFrontend  <- WebconsoleBackend --: Response
+        WebconsoleFrontend  <- WebconsoleFrontend --:
+
+        WebconsoleFrontend  -> WebconsoleFrontend ++: MCIS 생성
+            WebconsoleFrontend  -> WebconsoleBackend ++: Application 목록 조회
+                WebconsoleBackend  -> ApplicationManager ++: GET : /
+                WebconsoleBackend  <- ApplicationManager --: Response
+            WebconsoleFrontend  <- WebconsoleBackend --: 
+            WebconsoleFrontend  -> WebconsoleFrontend : Application 선택
+            WebconsoleFrontend  -> WebconsoleFrontend : Infra 정보입력
+            WebconsoleFrontend  -> WebconsoleBackend ++: Infra 생성
+                WebconsoleBackend  -> InfraManager ++: GET : /
+                WebconsoleBackend  <- InfraManager --: Response
+            WebconsoleFrontend  <- WebconsoleBackend --:
+        WebconsoleFrontend  <- WebconsoleFrontend --:
+
+    WebconsoleFrontend  <- WebconsoleFrontend --:
+EndUser     <- WebconsoleFrontend --: return 
+
+EndUser     -> WebconsoleFrontend ++: Application 접속 및 활용
+    WebconsoleFrontend  -> WebconsoleFrontend ++: MCIS MNG
+        WebconsoleFrontend  -> WebconsoleFrontend ++: MCIS 목록 조회
+            WebconsoleFrontend  -> WebconsoleBackend ++: GET : / 
+            WebconsoleFrontend  <- WebconsoleBackend --: Response
+        WebconsoleFrontend  <- WebconsoleFrontend --:
+        WebconsoleFrontend  -> WebconsoleFrontend : MCIS 선택
+        WebconsoleFrontend  -> WebconsoleFrontend : VM 선택        
+
+        WebconsoleFrontend  -> WebconsoleFrontend ++: Application 접속 및 활용
+            WebconsoleFrontend  -> ApplicationManager : Application 접속
+            ApplicationManager  -> ApplicationManager : Application 활용
+        WebconsoleFrontend  <- WebconsoleFrontend --: Response
+    WebconsoleFrontend  <- WebconsoleFrontend --: 
+EndUser     <- WebconsoleFrontend --: return 
+
+EndUser     -> WebconsoleFrontend ++: 인프라 모니터링/트레이싱/로깅
+    WebconsoleFrontend  -> WebconsoleFrontend ++: Monitoring MNG
+        WebconsoleFrontend  -> WebconsoleFrontend ++: MCIS 목록 조회
+            WebconsoleFrontend  -> WebconsoleBackend ++: GET : / 
+            WebconsoleFrontend  <- WebconsoleBackend --: Response
+        WebconsoleFrontend  <- WebconsoleFrontend --:
+        WebconsoleFrontend  -> WebconsoleFrontend : MCIS 선택
+        WebconsoleFrontend  -> WebconsoleFrontend : VM 선택    
+
+        WebconsoleFrontend  -> WebconsoleFrontend ++: 모니터링
+            WebconsoleFrontend  -> Observability : 모니터링 정보 조회
+            WebconsoleFrontend  -> WebconsoleBackend ++: Response
+            WebconsoleFrontend  <- WebconsoleBackend --: Response
+        WebconsoleFrontend  <- WebconsoleFrontend --: 
+
+        WebconsoleFrontend  -> WebconsoleFrontend ++: 트레이싱
+            WebconsoleFrontend  -> Observability : 트레이싱 정보 조회
+            WebconsoleFrontend  -> WebconsoleBackend ++: Response
+            WebconsoleFrontend  <- WebconsoleBackend --: Response
+        WebconsoleFrontend  <- WebconsoleFrontend --: 
+
+        WebconsoleFrontend  -> WebconsoleFrontend ++: 로깅
+            WebconsoleFrontend  -> Observability : 로깅 정보 조회
+            WebconsoleFrontend  -> WebconsoleBackend ++: Response
+            WebconsoleFrontend  <- WebconsoleBackend --: Response
+        WebconsoleFrontend  <- WebconsoleFrontend --: 
+    
+EndUser     <- WebconsoleFrontend --: return 
+
+@enduml

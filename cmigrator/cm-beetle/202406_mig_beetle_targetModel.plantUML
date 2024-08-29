@@ -1,0 +1,37 @@
+@startuml
+
+title "목표모델 관리"
+
+actor User as EndUser
+
+participant "CM-BUTTERFLY" as butterfly
+participant "CM-BEETLE" as beetle
+
+EndUser     -> butterfly ++
+    note right
+        TargetModel Mng( 예상 )
+    end note
+    butterfly   -> butterfly ++: get SourceModel List
+        butterfly  -> beetle ++: GET /xxx
+        butterfly  <- beetle --: return result
+    butterfly   <- butterfly --: return result
+
+    butterfly -> butterfly : select sourceModel
+
+    butterfly   -> butterfly ++: get recommendation
+        
+        butterfly  -> beetle ++: POST /recommendation/infra
+        butterfly  <- beetle --: return result
+    butterfly   <- butterfly --: return result
+
+    butterfly -> butterfly : select recommendation
+    butterfly -> butterfly : edit target ( before save )
+
+    butterfly   -> butterfly ++: save Target Model
+        butterfly  -> beetle ++: POST /xxx
+        butterfly  <- beetle --: return result
+    butterfly   <- butterfly --: return result
+EndUser     <- butterfly --
+
+ 
+@enduml

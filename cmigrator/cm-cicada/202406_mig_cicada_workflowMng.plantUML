@@ -1,0 +1,39 @@
+@startuml
+
+title "Integration Test"
+
+actor User as EndUser
+
+participant "CM-BUTTERFLY" as butterfly
+participant "CM-CICADA" as cicada
+participant "CM-BEETLE" as beetle
+
+
+
+EndUser     -> butterfly ++
+    note right
+        Workflow Mng
+    end note
+    butterfly   -> butterfly ++: getWorkflowList
+        butterfly   -> cicada ++: GET /workflow
+        butterfly  <- cicada --: return result
+    butterfly  <- butterfly --:
+
+    butterfly  -> butterfly : select workflow
+    
+    butterfly  -> butterfly ++: load workflow
+        butterfly   -> cicada ++: GET /workflow/{id}
+        butterfly  <- cicada --: return result
+    butterfly  <- butterfly --:
+
+    butterfly  -> butterfly ++: run selected workflow
+        butterfly  -> cicada ++: POST /workflow/run/{id}
+            cicada  -> beetle ++: POST /migration/infra
+            cicada  <- beetle --: return result
+        butterfly  <- cicada --: return result
+    butterfly  <- butterfly --:
+
+EndUser     <- butterfly --
+
+ 
+@enduml

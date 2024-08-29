@@ -1,0 +1,35 @@
+@startuml
+
+title "WorkflowList"
+
+actor User as EndUser
+
+participant "WorkflowManage.html" as WorkflowManage
+participant "workflowmanage.js" as wfManage
+participant "workflowutil.js" as wfUtil
+
+
+EndUser     -> WorkflowManage
+    note right
+        workflow 목록조회
+    end note
+WorkflowManage         -> wfManage ++: getWorkflowList()
+
+EndUser     -> WorkflowManage
+    note right
+        workflow 선택
+    end note
+WorkflowManage        -> wfManage ++: getWorkflowById()
+wfManage        -> wfUtil : convertToDiagram()
+wfManage        -> wfManage : resetDesigner()
+WorkflowManage     <- wfManage --:
+
+EndUser     -> WorkflowManage
+    note right
+        workflow 실행
+    end note
+WorkflowManage  -> wfManage ++: executeWorkflow
+
+WorkflowManage     <- wfManage --: return workflow execute result
+
+@enduml

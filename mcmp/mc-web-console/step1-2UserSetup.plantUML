@@ -1,0 +1,56 @@
+@startuml
+
+title "[운영자]_환경구성.- 사용자관리"
+
+actor User as EndUser
+
+box "MC Web Console"
+participant WebconsoleFrontend
+participant WebconsoleBackend
+end box
+
+box "IAM Manager"
+participant IamManager
+end box
+
+box "InfraManager"
+participant InfraManager
+end box
+
+EndUser     -> WebconsoleFrontend ++: 로그인(관리자)
+    WebconsoleFrontend -> WebconsoleBackend ++: POST Login
+    WebconsoleFrontend  <- WebconsoleBackend --: Response : valid
+    WebconsoleFrontend -> WebconsoleBackend ++: POST GetWPmappingListByWorkspaceId
+    WebconsoleFrontend  <- WebconsoleBackend --: Response : Roles
+    WebconsoleFrontend -> WebconsoleFrontend : Set Menu by Roles
+EndUser     <- WebconsoleFrontend --: return 
+
+EndUser     -> WebconsoleFrontend ++: 사용자 관리
+    WebconsoleFrontend  -> WebconsoleFrontend ++: User MNG
+        WebconsoleFrontend  -> WebconsoleFrontend ++: User 목록 조회
+            WebconsoleFrontend  -> WebconsoleBackend ++: POST GetUsers 
+            WebconsoleFrontend  <- WebconsoleBackend --: Response
+        WebconsoleFrontend  <- WebconsoleFrontend --:
+
+        WebconsoleFrontend  -> WebconsoleFrontend ++: 사용자 추가
+            WebconsoleFrontend  -> WebconsoleFrontend ++: POST CreateUser
+            WebconsoleFrontend  <- WebconsoleFrontend --:
+        WebconsoleFrontend  <- WebconsoleFrontend --:
+    WebconsoleFrontend  <- WebconsoleFrontend --: 
+EndUser     <- WebconsoleFrontend --: return 
+
+EndUser     -> WebconsoleFrontend ++: Workspace 관리
+    WebconsoleFrontend  -> WebconsoleFrontend ++: Workspace MNG
+        WebconsoleFrontend  -> WebconsoleFrontend ++: Workspace 목록 조회
+            WebconsoleFrontend  -> WebconsoleBackend ++: POST getworkspacelist 
+            WebconsoleFrontend  <- WebconsoleBackend --: Response
+        WebconsoleFrontend  <- WebconsoleFrontend --:
+
+        WebconsoleFrontend  -> WebconsoleFrontend ++: Workspace User Role Mapping
+            WebconsoleFrontend  -> WebconsoleBackend ++: POST : createworkspaceuserrolemappingbyname
+            WebconsoleFrontend  <- WebconsoleBackend --:
+        WebconsoleFrontend  <- WebconsoleFrontend --:
+    WebconsoleFrontend  <- WebconsoleFrontend --: 
+EndUser     <- WebconsoleFrontend --: return 
+
+@enduml

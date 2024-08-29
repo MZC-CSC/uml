@@ -1,0 +1,48 @@
+@startuml
+
+title "Integration Test"
+
+actor User as EndUser
+
+participant "CM-BUTTERFLY" as butterfly
+participant "CM-BEETLE" as beetle
+participant "CM-HONEYBEE" as honeyBee
+
+
+EndUser     -> butterfly ++
+    note right
+        SourceModel Mng( 예상 )
+    end note
+    butterfly   -> butterfly ++: getMigrationGroupList
+        butterfly  -> honeyBee ++: GET /infra/{uuid}
+        butterfly  <- honeyBee --: return result        
+    butterfly   <- butterfly --
+
+    butterfly   -> butterfly : select Migration Group
+
+    butterfly   -> butterfly ++: getConnectionList by Migration group
+        butterfly  -> honeyBee ++: GET /connection_info
+        butterfly  <- honeyBee --: return result        
+    butterfly   <- butterfly --
+    
+    butterfly   -> butterfly : select Connection 
+
+    butterfly   -> butterfly ++: aggregate infra info
+        butterfly  -> honeyBee ++: GET /import/infra/{uuid}
+        butterfly  <- honeyBee --: return result        
+    butterfly   <- butterfly --
+
+    butterfly   -> butterfly ++: getInfra Info of OnPrem by connection
+        butterfly  -> honeyBee ++: GET /infra/{uuid}
+        butterfly  <- honeyBee --: return result        
+    butterfly   <- butterfly --
+    
+    butterfly   -> butterfly : input Source Model Form
+
+    butterfly   -> butterfly ++: save Source Model        
+        butterfly  -> beetle ++: POST : /xxx
+        butterfly  <- beetle --: return result
+    butterfly   <- butterfly --: return result
+EndUser     <- butterfly --
+ 
+@enduml

@@ -1,0 +1,84 @@
+@startuml
+
+title "Workflow 작업 순서"
+
+actor User as EndUser
+
+participant "CM-BUTTERFLY" as butterfly
+participant "CM-CICADA" as cicada
+
+
+EndUser     -> butterfly ++: Workflow component/template관리
+    note right
+        Workflow Component 관리
+    end note
+    butterfly         -> butterfly ++: TaskComponent 관리
+        butterfly         -> cicada ++: Get : /cicada/task_componrnt 
+        butterfly         <- cicada --: return result
+        butterfly         -> cicada ++: POST : /cicada/task_component
+        butterfly         <- cicada --: return result
+    butterfly        <- butterfly --: return result
+
+    note right
+        Workflow Template 관리(not yet)
+    end note
+    butterfly         -> butterfly ++: Workflow Template 관리
+        butterfly         -> cicada ++: POST : /cicada/workflow_template
+        butterfly         <- cicada --: return result
+    butterfly        <- butterfly --: return result
+EndUser     <- butterfly --:
+
+EndUser     -> butterfly ++:Workflow 관리
+    note right
+        Workflow 추가
+    end note
+    
+    butterfly         -> butterfly ++: Task Component 목록 조회
+        butterfly        -> cicada ++: GET : /cicada/task_component
+        butterfly         <- cicada --: return result
+    butterfly        <- butterfly --: return result
+
+    butterfly         -> butterfly ++: Task Template 목록 조회
+        butterfly        -> cicada ++: GET : /cicada/task_template
+        butterfly         <- cicada --: return result
+    butterfly        <- butterfly --: return result
+    
+    butterfly         -> butterfly ++: 목표 모델 조회
+        butterfly        -> cicada ++: GET : /목표 모델 목록
+        butterfly         <- cicada --: return result
+    butterfly        <- butterfly --: return result
+
+    butterfly        -> butterfly : 목표모델 선택
+    
+    butterfly        -> butterfly : Workflow Task 정의
+    
+    butterfly        -> butterfly ++: Workflow 저장
+        butterfly         -> cicada ++: POST : /cicada/workflow
+        butterfly         <- cicada --: return result
+    butterfly        <- butterfly --: return result
+
+EndUser     <- butterfly --:
+
+EndUser     -> butterfly ++:Workflow 실행
+    note right
+        Workflow 실행
+    end note
+    
+    butterfly         -> butterfly ++: Workflow 목록 조회
+        butterfly        -> cicada ++: GET : /cicada/workflow
+        butterfly         <- cicada --: return result
+    butterfly        <- butterfly --: return result
+
+    butterfly         -> butterfly ++: Workflow 선택
+        butterfly        -> cicada ++: GET : /cicada/workflow/{wfId}
+        butterfly         <- cicada --: return result
+    butterfly        <- butterfly --: return result
+    
+    butterfly         -> butterfly ++: 목표 모델 실행
+        butterfly        -> cicada ++: POST : /cicada/workflow/{wfId}/run
+        butterfly         <- cicada --: return result
+    butterfly        <- butterfly --: return result
+
+EndUser     <- butterfly --:
+
+@enduml

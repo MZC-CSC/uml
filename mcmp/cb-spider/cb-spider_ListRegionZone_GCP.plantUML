@@ -1,0 +1,31 @@
+@startuml
+
+title "ListRegionZone GCP"
+
+actor User as EndUser
+
+participant RegionZoneHandler
+participant CommonHandler
+participant "GCP ComputeService" as GCP
+
+
+group Step: Get All Regions and Zones of AWS
+    autonumber
+    EndUser -> RegionZoneHandler ++: ListRegionZone
+    RegionZoneHandler -> CommonHandler ++: ListRegion
+    CommonHandler -> GCP : Regions.List(projectId)
+    CommonHandler <- GCP : Return resp
+    RegionZoneHandler <- CommonHandler : Return resp
+    RegionZoneHandler -> RegionZoneHandler ++: for resp.Items
+    RegionZoneHandler -> CommonHandler : GetZoneListByRegion
+    CommonHandler -> GCP : Zones.List(projectId)
+    CommonHandler <- GCP : Return respZone
+    RegionZoneHandler <- CommonHandler : Return respZone
+    RegionZoneHandler -> RegionZoneHandler ++: for respZone.Items
+    RegionZoneHandler -> CommonHandler : GetZoneStatus
+    RegionZoneHandler -> RegionZoneHandler : append(regionZoneInfoList)
+    EndUser <- RegionZoneHandler --: Return Regions Zones
+end
+
+
+@enduml
