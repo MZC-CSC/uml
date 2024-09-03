@@ -1,0 +1,25 @@
+@startuml
+
+title "AUTH_IamManager not use"
+
+actor User as EndUser
+
+participant "Frontend" as front
+participant "Backend" as back
+participant "InfraManager" as target
+
+EndUser -> front ++: login
+    front   -> back ++: POST: login
+    front   <- back --: result
+EndUser     <- front --:
+
+EndUser -> front ++: setCurrentWs("ws01")
+    front   -> back ++: POST: projectListByWs
+        back    -> target ++: POST: listNs
+        back    <- target --: result: nsList
+
+    front   <- back --: result
+EndUser <- front --:
+
+EndUser -> front : setCurrentProject
+@enduml

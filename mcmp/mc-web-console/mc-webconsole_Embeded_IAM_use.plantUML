@@ -1,0 +1,22 @@
+@startuml
+
+title "AUTH_IamManager use"
+
+actor User as EndUser
+
+participant "Frontend" as front
+participant "Backend" as back
+participant "IamManager" as iam
+participant "TargetFramework" as target
+
+EndUser -> front : setCurrentProject
+
+EndUser -> front ++: call target with sessionToken
+    front   -> target ++: targetAPI Call(sessionToken)
+
+    front   <- target --: result ( embeded )
+    
+EndUser     <- front --:
+
+
+@enduml

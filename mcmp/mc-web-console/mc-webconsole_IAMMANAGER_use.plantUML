@@ -1,0 +1,33 @@
+@startuml
+
+title "AUTH_IamManager use"
+
+actor User as EndUser
+
+participant "Frontend" as front
+participant "Backend" as back
+participant "IamManager" as iam
+
+EndUser -> front ++: login
+    front   -> back ++: POST: login
+
+        back    -> iam ++: POST: login
+        back    <- iam --: result: sessionToken / WsList
+
+        back    -> iam ++: POST: menuListByUser
+        back    <- iam --: result: menuList
+
+    front   <- back --: result
+EndUser     <- front --:
+
+EndUser -> front ++: setCurrentWs
+    front   -> back ++: POST: projectListByWs
+
+        back    -> iam ++: POST: projectListByWs
+        back    <- iam --: result: projectList
+
+    front   <- back --: result
+EndUser <- front --:
+
+EndUser -> front : setCurrentProject
+@enduml
