@@ -9,41 +9,48 @@ participant "CM-ANT" as ant
 participant "CM-BETTLE" as beetle
 participant "CB-SPIDER" as spider
 
-
+group 인프라 전환 추정 가격 조회
     EndUser -> beetle : 인프라 추천 요청
     EndUser <- beetle : 인프라 추천 응답
     EndUser -> EndUser: 추천 인프라 선택
 
-EndUser     -> butterfly ++: 인프라 전환 추정 가격 조회
-    note right
-        인프라 전환 추정 가격 조회
-    end note
+    EndUser     -> butterfly ++: 인프라 전환 추정 가격 등록
+
 
     butterfly -> ant : 추천 인프라 정보를 통한 csp 가격 조회
     ant -> spider : 인프라에 대한 가격 조회
     ant <- spider : 가격 조회 응답
     ant -> ant : 전환 비용에 가격 추정
-    butterfly <- ant : 전환 추정 비용 응답
-EndUser     <- butterfly --:
+    butterfly <- ant : 전환 추정 완료 응답
+    EndUser     <- butterfly --:
 
+    EndUser     -> butterfly ++: 인프라 전환 추정 가격 조회
+    butterfly -> ant : 추천 인프라 정보를 통한 db 조회
+    ant -> ant : 전환 비용에 가격 추정
+    butterfly <- ant : 전환 추정 가격 완료 응답
+    EndUser     <- butterfly --:
 
-EndUser -> beetle : 마이그레이션 된 리소스 정보 요청
-EndUser <- beetle : 마이그레이션 된 리소스 정보 응답
+end
+    
+group 마이그레이션된 리소스 비용 추정
+    EndUser -> beetle : 마이그레이션 된 리소스 정보 요청
+    EndUser <- beetle : 마이그레이션 된 리소스 정보 응답
 
-EndUser     -> butterfly ++: 마이그레이션 된 리소스 비용 추정
+    EndUser     -> butterfly ++: 마이그레이션 된 리소스 비용 추정
 
-    note right
-        마이그레이션 된 리소스 비용 추정
-    end note
-
-    butterfly -> ant : 리소스 비용 비용 수집 요청 (manual 방식)
+    butterfly -> ant : 리소스 비용 비용 수집 요청 (manual)
     ant -> spider : 리소스 정보를 통한 인프라 비용 수집
     ant <- spider : 리소스 추정 비용 수집
-    
     ant -> ant : 리소스 정보 저장
+    butterfly <- ant : 전환 추정 완료 응답
+    EndUser     <- butterfly --:
 
-    butterfly -> ant : 마이그레이션 된 리소스 추정 비용 조회 요청
-    butterfly <- ant : 마이그레이션 된 리소스 추정 비용 응답
-EndUser     <- butterfly --: 리소스 추정 비용 응답
+    EndUser     -> butterfly ++: 리소스 비용 조회 요청
+    butterfly -> ant : 리소스 추정 비용 조회 요청
+    ant -> ant : 리소스 추정 비용 조회
+    butterfly <- ant : 리소스 추정 비용 응답
+    EndUser     <- butterfly --: 리소스 추정 비용 응답
+end
+
 
 @enduml
